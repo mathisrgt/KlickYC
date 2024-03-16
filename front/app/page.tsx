@@ -92,7 +92,8 @@ export default function KlickYC() {
     const hash = generateHash(name, transactionDataForHash);
     console.log(hash)
     
-    const uploadResponse = await lighthouse.uploadText(hash, process.env.NEXT_PUBLIC_LIGHTHOUSE, name)
+	const apiKey = "" + process.env.NEXT_PUBLIC_LIGHTHOUSE;
+    const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
     let urlEndpoint = uploadResponse.data.Hash
 
     return transactionDataForHash;
