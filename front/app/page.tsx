@@ -1,14 +1,15 @@
 "use client"
 
+// LIBRARIES
 import { SHA256 } from "crypto-js";
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, CircularProgress, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation';
-import * as fs from 'fs';
 import lighthouse from '@lighthouse-web3/sdk';
 
+// IMAGES
 import klickyc_white from "@/public/klickyc_white.svg"
 import klickyc_black from "@/public/klickyc_black.svg"
 
@@ -24,11 +25,6 @@ export default function KlickYC() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [page, setPage] = useState("login");
   const [fileName, setFileName] = useState("Import your ID");
-  const [transaction, setTransaction] = useState({
-    card: '',
-    date: '',
-    value: ''
-  });
 
   // CODE TO ACCESS_TOKEN REQUEST
   useEffect(() => {
@@ -75,7 +71,6 @@ export default function KlickYC() {
       .then(data => {
         const dataForHash = getFirstTransaction(data);
 
-        setTransaction(dataForHash)
         console.log(dataForHash)
       })
       .catch(error => {
@@ -97,17 +92,11 @@ export default function KlickYC() {
     const hash = generateHash(name, transactionDataForHash);
     console.log(hash)
     
-    const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
-    console.log(uploadResponse);
-    console.log(uploadResponse.data.Hash)
+    const uploadResponse = await lighthouse.uploadText(hash, process.env.NEXT_PUBLIC_LIGHTHOUSE, name)
     urlEndpoint = uploadResponse.data.Hash
-
-    // const url = uploadFile();
-    // console.log(url)
 
     return transactionDataForHash;
   }
-
 
   function generateHash(name: String, transaction: transactionDataForHash) {
     const transactionString = JSON.stringify(transaction);
@@ -117,9 +106,6 @@ export default function KlickYC() {
   }
 
   // UPLOAD HASH ON LIGHTHOUSE
-  const apiKey = '50a7c871.255de181ef8045afb4e61802edd999f3';
-  const filePath = './data.txt'; // Provide the path to your file
-
   let urlEndpoint = ""
 
   async function uploadFile() {
