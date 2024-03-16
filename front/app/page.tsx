@@ -93,7 +93,7 @@ export default function KlickYC() {
     console.log(hash)
     
     const uploadResponse = await lighthouse.uploadText(hash, process.env.NEXT_PUBLIC_LIGHTHOUSE, name)
-    urlEndpoint = uploadResponse.data.Hash
+    let urlEndpoint = uploadResponse.data.Hash
 
     return transactionDataForHash;
   }
@@ -103,17 +103,6 @@ export default function KlickYC() {
     const toHash = `${name}${transactionString}`;
     const hash = SHA256(toHash).toString();
     return hash;
-  }
-
-  // UPLOAD HASH ON LIGHTHOUSE
-  let urlEndpoint = ""
-
-  async function uploadFile() {
-    try {
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-    return urlEndpoint
   }
 
   // FRONT
