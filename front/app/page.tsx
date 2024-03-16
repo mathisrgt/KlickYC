@@ -80,6 +80,7 @@ export default function KlickYC() {
 			});
 	}
 
+	// TRANSACTION PARSER
 	function getFirstTransaction(data: any) {
 		const transactionData = data.transactions[data.total - 1];
 
