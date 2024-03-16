@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const url = 'https://gateway.lighthouse.storage/ipfs/QmbJVk5rSAdBNuva24idAjTqjtapVtvUtDkyGPdKCk15jr';
+const url = 'https://gateway.lighthouse.storage/ipfs/QmWTZo7CcNa4LbncVJuYetPfoDtg32QuLqAK7XX6hJK7Y5';
 
 async function fetchData() {
   try {
