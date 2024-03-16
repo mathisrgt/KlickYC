@@ -9,14 +9,25 @@ import { useSearchParams } from 'next/navigation';
 import klickyc_white from "@/public/klickyc_white.svg"
 import klickyc_black from "@/public/klickyc_black.svg"
 
+interface transactionDataForHash {
+	card: string, 
+	date: string, 
+	value: string
+}
+
 export default function KlickYC() {
+	const searchParams = useSearchParams()
+
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [page, setPage] = useState("login");
 	const [fileName, setFileName] = useState("Import your ID");
-	const [accessToken, setAccessToken] = useState("");
+	const [transaction, setTransaction] = useState({
+		card: '',
+		date: '',
+		value: ''
+	  });
 
-	const searchParams = useSearchParams()
-
+	// CODE TO ACCESS_TOKEN REQUEST
 	useEffect(() => {
 		const code = searchParams.get('code');
 		const data = {
@@ -39,7 +50,6 @@ export default function KlickYC() {
 			.then((response: any) => response.json())
 			.then((data: any) => {
 				console.log(data);
-				setAccessToken(data.access_token);
 				console.log('Access Token:', data.access_token);
 				getTransaction(data.access_token);
 			})
@@ -48,6 +58,7 @@ export default function KlickYC() {
 			});
 	}, []);
 
+	// TRANSACTIONS API CALL
 	function getTransaction(accessToken: string) {
 		console.log("Access Token: " + accessToken);
 		fetch(`https://${process.env.NEXT_PUBLIC_DOMAINE}-sandbox.biapi.pro/2.0//users/me/transactions?limit=1000`, {
@@ -59,11 +70,26 @@ export default function KlickYC() {
 		})
 			.then((response) => response.json())
 			.then(data => {
-				console.log(data);
+				const dataForHash = getFirstTransaction(data);
+
+				setTransaction(dataForHash)
+				console.log(dataForHash)
 			})
 			.catch(error => {
 				console.error('Error:', error);
 			});
+	}
+
+	function getFirstTransaction(data: any) {
+		const transactionData = data.transactions[data.total - 1];
+
+		const transactionDataForHash = {
+			card: transactionData.card,
+			date: transactionData.date,
+			value: Math.abs(transactionData.value).toString()
+		}
+		
+		return transactionDataForHash;
 	}
 
 	function handleFileChange(event: any) {
