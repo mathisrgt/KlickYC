@@ -26,7 +26,7 @@ async function listVaultsByAccount(account) {
 }
 
 // Example usage:
-const account = "0x6C53e96Fb15e342ce92306B2d81C6253eEba9C1d";
+const account = "0x9Da44ADC3ca977495b9110716EF31842c0F7773e";
 
 listVaultsByAccount(account)
     .then(data => {

@@ -33,8 +33,8 @@ async function createVault(vaultId, account, cache) {
 }
 
 // Example usage:
-const vaultId = "vault.mathi";
-const account = "0x6C53e96Fb15e342ce92306B2d81C6253eEba9C1d";
+const vaultId = "vault.math";
+const account = "0x9Da44ADC3ca977495b9110716EF31842c0F7773e";
 const cache = 30; // Cache duration in minutes (optional)
 
 createVault(vaultId, account, cache)

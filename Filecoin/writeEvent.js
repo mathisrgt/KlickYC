@@ -40,14 +40,48 @@ async function writeEvent(vaultId, eventData, filename, signature, timestamp = n
 
 // Example usage:
 const vaultId = "vault.mathis";
-const eventData = { key: "5fc7d07772b9487c8f5f59a3115710d260d0e82710858d5d776a1e98c275e033",
-                    ENS: "mathis.eth"};
 const filename = "data.hello";
-const signature = "a4cb49a595988e2a3b20e6ee468d50a8d3c3cb01a278754c07efda3a89a7e60527545deb512204b034100d6d6b9d169a2d22f5e6286c9c0272e8dc920981941a00";
+// const eventData = { key: "5fc7d07772b9487c8f5f59a3115710d260d0e82710858d5d776a1e98c275e033"};
+// const signature = "752b37c9989b0ff32ad7f9a12e72109fd2918ed72a04cf8eeccb0909bab4efaf";
 // const timestamp = 1708987192; // Unix timestamp (optional)
 // Convert seconds to milliseconds
 const timestamp = Date.now();
 // console.log(timestamp);
+
+const crypto = require('crypto');
+
+// Your event data
+const eventData = { key: "5fc7d07772b9487c8f5f59a3115710d260d0e82710858d5d776a1e98c275e033" };
+
+// Serialize the event data (to JSON)
+const serializedEventData = JSON.stringify(eventData);
+console.log('Serialized event data:', serializedEventData);
+
+// Load your private key (replace 'YOUR_PRIVATE_KEY' with your actual private key)
+const privateKey = '752b37c9989b0ff32ad7f9a12e72109fd2918ed72a04cf8eeccb0909bab4efaf';
+
+// Create a signer object with SHA-256 algorithm
+const signer = crypto.createSign('sha256');
+console.log("signer", signer);
+
+// Update the signer with your data
+signer.update(serializedEventData);
+console.log("1")
+
+// Convert hexadecimal private key to buffer
+const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+
+// Sign the data with the private key buffer
+const signature = signer.sign(privateKeyBuffer, 'hex');
+
+
+// Sign the data with the private key
+// const signature = signer.sign(privateKey, 'hex');
+
+console.log('Signature:', signature);
+
+
+
 
 writeEvent(vaultId, eventData, filename, signature, timestamp)
     .then(response => {
