@@ -6,6 +6,7 @@ import Providers from './providers'
 
 const inter = Inter({ subsets: ["latin"] });
 
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: "KlickYC",
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Providers>
-        <body className={inter.className}>{children}</body>
+        <Suspense>
+          <body className={inter.className}>{children}</body>
+        </Suspense>
       </Providers>
     </html>
   );
