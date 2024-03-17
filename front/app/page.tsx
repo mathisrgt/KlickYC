@@ -24,9 +24,9 @@ interface transactionDataForHash {
 }
 
 export default function KlickYC() {
-	const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
 
-	const account = useAccount();
+  const account = useAccount();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [page, setPage] = useState("login");
@@ -106,7 +106,7 @@ export default function KlickYC() {
 
     console.log('Register:', localStorage.getItem('register'))
 
-    if (localStorage.getItem('register') == 'true'){
+    if (localStorage.getItem('register') == 'true') {
       const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
       let urlEndpoint = uploadResponse.data.Hash
       console.log('Uploaded to IPFS:', urlEndpoint)
@@ -121,10 +121,10 @@ export default function KlickYC() {
         console.log('Verified')
       }
     }
-    
+
     return transactionDataForHash;
   }
-  
+
   const url = 'https://gateway.lighthouse.storage/ipfs/QmR6MqrcrwtKVVxsdcDHX6LNUmCzhNcbiBJEdHBQHmXfUV'
 
   async function fetchData() {
@@ -149,7 +149,7 @@ export default function KlickYC() {
   async function sign() {
     await signMessage(config, { message: 'C\'est mon wallet ! (KlickYC)' });
 
-		/*try {
+    /*try {
       if (typeof window.ethereum !== "undefined") {
         await ethereum.request({ method: "eth_requestAccounts" })
         const accounts = await ethereum.request({ method: "eth_accounts" })
@@ -165,12 +165,12 @@ export default function KlickYC() {
           '0xb09e2e1BCE303884B530BF5e35887D813acb60BA' // accounts[0]
         );
 
-				return name;
-			}
-		} catch (error) {
-			console.error(error);
-		}*/
-	}
+        return name;
+      }
+    } catch (error) {
+      console.error(error);
+    }*/
+  }
 
   // FRONT
   function handleFileChange(event: any) {
@@ -193,7 +193,7 @@ export default function KlickYC() {
   async function handleRegister() {
     localStorage.setItem('register', 'true');
     sign().then(() => {
-      window.location.href = "https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/"
+      window.location.href = "https://london-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=837089&redirect_uri=http://localhost:3000/"
     })
   }
 
@@ -201,9 +201,8 @@ export default function KlickYC() {
     console.log(localStorage.getItem('register'))
     localStorage.setItem('register', 'false');
     console.log(localStorage.getItem('register'))
-    sign().then(() => {
-      window.location.href = "https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/"
-    })
+    window.location.href = "https://london-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=837089&redirect_uri=http://localhost:3000/"
+
   }
 
   return (
