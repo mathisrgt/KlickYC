@@ -8,7 +8,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation';
 import lighthouse from '@lighthouse-web3/sdk';
-import { ethers } from "ethers";
+import { useAccount, useSignMessage } from 'wagmi';
+import { signMessage } from '@wagmi/core';
+import { config } from './config'
 
 // IMAGES
 import klickyc_white from "@/public/klickyc_white.svg"
@@ -22,6 +24,8 @@ interface transactionDataForHash {
 
 export default function KlickYC() {
 	const searchParams = useSearchParams()
+
+	const account = useAccount();
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [page, setPage] = useState("login");
@@ -113,7 +117,9 @@ export default function KlickYC() {
 
 	// SIGN
 	async function sign() {
-		try {
+		await signMessage(config, { message: 'C\'est mon wallet ! (KlickYC)' });
+
+		/*try {
 			if (typeof window.ethereum !== "undefined") {
 				await ethereum.request({ method: "eth_requestAccounts" })
 				const accounts = await ethereum.request({ method: "eth_accounts" })
@@ -133,7 +139,7 @@ export default function KlickYC() {
 			}
 		} catch (error) {
 			console.error(error);
-		}
+		}*/
 	}
 
 	// FRONT
