@@ -179,14 +179,14 @@ export default function KlickYC() {
     localStorage.setItem('ENS', ENS);
 		localStorage.setItem('register', 'true');
 		handleSign().then(() => {
-			window.location.href = "https://londres-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=2546294&redirect_uri=http://localhost:3000/"
+			window.location.href = "https://londres-sandbox.biapi.pro/2.0/auth/webview/en/connect?client_id=2546294&redirect_uri=http://localhost:3000/"
 		})
 	}
 
 	async function handleVerify() {
     localStorage.setItem('ENS', ENS);
     localStorage.setItem('register', 'false');
-		window.location.href = "https://londres-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=2546294&redirect_uri=http://localhost:3000/"
+		window.location.href = "https://londres-sandbox.biapi.pro/2.0/auth/webview/en/connect?client_id=2546294&redirect_uri=http://localhost:3000/"
 	}
 
 	return (
