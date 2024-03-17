@@ -39,8 +39,6 @@ We used LightHouse to store our data on IPFS very easily. Using the sdk of Light
 
 ## Product 🛠️
 
-### Deployment Strategy
-
 ## Getting Started
 
 First, run the development server:
