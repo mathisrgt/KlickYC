@@ -9,212 +9,252 @@ import Image from "next/image";
 import { useSearchParams } from 'next/navigation';
 import lighthouse from '@lighthouse-web3/sdk';
 import { ethers } from "ethers";
+import axios from "axios";
 
 // IMAGES
 import klickyc_white from "@/public/klickyc_white.svg"
 import klickyc_black from "@/public/klickyc_black.svg"
 
 interface transactionDataForHash {
-	card: string,
-	date: string,
-	value: string
+  card: string,
+  date: string,
+  value: string
 }
 
 export default function KlickYC() {
-	const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
 
-	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const [page, setPage] = useState("login");
-	const [fileName, setFileName] = useState("Import your ID");
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [page, setPage] = useState("login");
+  const [fileName, setFileName] = useState("Import your ID");
 
-	// CODE TO ACCESS_TOKEN REQUEST
-	useEffect(() => {
-		const code = searchParams.get('code');
 
-		if (code != undefined) {
-			const data = {
-				code: code,
-				client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-				client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-			};
+  // CODE TO ACCESS_TOKEN REQUEST
+  useEffect(() => {
+    const code = searchParams.get('code');
 
-			console.log('Code:', code);
-			console.log('Client ID:', data.client_id);
-			console.log('Secret:', data.client_secret);
+    if (code != undefined) {
+      const data = {
+        code: code,
+        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
+        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+      };
 
-			fetch(`https://${process.env.NEXT_PUBLIC_DOMAINE}-sandbox.biapi.pro/2.0/auth/token/access`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			})
-				.then((response: any) => response.json())
-				.then((data: any) => {
-					console.log(data);
-					console.log('Access Token:', data.access_token);
-					getTransaction(data.access_token);
-				})
-				.catch((error: any) => {
-					console.error('Error:', error);
-				});
-		}
-	}, []);
+      console.log('Code:', code);
+      console.log('Client ID:', data.client_id);
+      console.log('Secret:', data.client_secret);
 
-	// TRANSACTIONS API CALL
-	function getTransaction(accessToken: string) {
-		console.log("Access Token: " + accessToken);
-		fetch(`https://${process.env.NEXT_PUBLIC_DOMAINE}-sandbox.biapi.pro/2.0//users/me/transactions?limit=1000`, {
-			method: 'GET',
-			headers: {
-				'Authorization': 'Bearer ' + accessToken,
-				'Content-Type': 'application/json'
-			}
-		})
-			.then((response) => response.json())
-			.then(data => {
-				const dataForHash = getFirstTransaction(data);
+      fetch(`https://${process.env.NEXT_PUBLIC_DOMAINE}-sandbox.biapi.pro/2.0/auth/token/access`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response: any) => response.json())
+        .then((data: any) => {
+          console.log(data);
+          console.log('Access Token:', data.access_token);
+          getTransaction(data.access_token);
+        })
+        .catch((error: any) => {
+          console.error('Error:', error);
+        });
+    }
+  }, []);
 
-				console.log(dataForHash)
-			})
-			.catch(error => {
-				console.error('Error:', error);
-			});
-	}
+  // TRANSACTIONS API CALL
+  function getTransaction(accessToken: string) {
+    console.log("Access Token: " + accessToken);
+    fetch(`https://${process.env.NEXT_PUBLIC_DOMAINE}-sandbox.biapi.pro/2.0//users/me/transactions?limit=1000`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => response.json())
+      .then(data => {
+        const dataForHash = getFirstTransaction(data);
 
-	// TRANSACTION PARSER
-	async function getFirstTransaction(data: any) {
-		const transactionData = data.transactions[data.total - 1];
+        console.log(dataForHash)
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
 
-		const transactionDataForHash = {
-			card: transactionData.card,
-			date: transactionData.date,
-			value: Math.abs(transactionData.value).toString()
-		}
+  // TRANSACTION PARSER
+  async function getFirstTransaction(data: any) {
+    const transactionData = data.transactions[data.total - 1];
 
-		const name = 'KlickYC';
-		const hash = generateHash(name, transactionDataForHash);
-		console.log(hash)
+    const transactionDataForHash = {
+      card: transactionData.card,
+      date: transactionData.date,
+      value: Math.abs(transactionData.value).toString()
+    }
 
-		const apiKey = "" + process.env.NEXT_PUBLIC_LIGHTHOUSE;
-		const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
+    const name = 'KlickYC';
+    const hash = generateHash(name, transactionDataForHash);
+    console.log(hash)
 
-		let urlEndpoint = uploadResponse.data.Hash
+    const apiKey = "" + process.env.NEXT_PUBLIC_LIGHTHOUSE;
 
-		return transactionDataForHash;
-	}
+    console.log('Register:', localStorage.getItem('register'))
 
-	function generateHash(name: String, transaction: transactionDataForHash) {
-		const transactionString = JSON.stringify(transaction);
-		const toHash = `${name}${transactionString}`;
-		const hash = SHA256(toHash).toString();
-		return hash;
-	}
+    if (localStorage.getItem('register') == 'true'){
+      const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
+      let urlEndpoint = uploadResponse.data.Hash
+      console.log('Uploaded to IPFS:', urlEndpoint)
+      console.log('URL:', url)
+    }
+    else {
+      const hashTest = generateHash(name, transactionDataForHash);
+      console.log('Hash Test:', hashTest)
+      const hashData = fetchData();
+      console.log('Hash Data:', hashData)
+      if (hashTest == await hashData) {
+        console.log('Verified')
+      }
+    }
+    
+    return transactionDataForHash;
+  }
+  
+  const url = 'https://gateway.lighthouse.storage/ipfs/QmR6MqrcrwtKVVxsdcDHX6LNUmCzhNcbiBJEdHBQHmXfUV'
 
-	// SIGN
-	async function sign() {
-		try {
-			if (typeof window.ethereum !== "undefined") {
-				await ethereum.request({ method: "eth_requestAccounts" })
-				const accounts = await ethereum.request({ method: "eth_accounts" })
-				console.log(accounts)
+  async function fetchData() {
+    try {
+      console.log('URL:', url)
+      const response = await axios.get(url);
+      console.log(response.data); // This will log the data fetched from the URL
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
 
-				const provider = new ethers.providers.Web3Provider(window.ethereum);
-				const signer = provider.getSigner();
-				const message = "Prove your the owner of this address.";
-				const signature = await signer.signMessage(message);
-				console.log(signature);
+  function generateHash(name: String, transaction: transactionDataForHash) {
+    const transactionString = JSON.stringify(transaction);
+    const toHash = `${name}${transactionString}`;
+    const hash = SHA256(toHash).toString();
+    return hash;
+  }
 
-				const name = await provider.lookupAddress(
-					'0xb09e2e1BCE303884B530BF5e35887D813acb60BA' // accounts[0]
-				);
+  // SIGN
+  async function sign() {
+    try {
+      if (typeof window.ethereum !== "undefined") {
+        await ethereum.request({ method: "eth_requestAccounts" })
+        const accounts = await ethereum.request({ method: "eth_accounts" })
+        console.log(accounts)
 
-				return name;
-			}
-		} catch (error) {
-			console.error(error);
-		}
-	}
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const message = "Prove your the owner of this address.";
+        const signature = await signer.signMessage(message);
+        console.log(signature);
 
-	// FRONT
-	function handleFileChange(event: any) {
-		const file = event.target.files[0];
-		if (file) {
-			setFileName(file.name);
-		} else {
-			setFileName('Import your ID');
-		}
-	};
+        const name = await provider.lookupAddress(
+          '0xb09e2e1BCE303884B530BF5e35887D813acb60BA' // accounts[0]
+        );
 
-	function handleCreateAccount() {
-		setPage("create-account");
-	}
+        return name;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-	function handleLogin() {
-		setPage("login");
-	}
+  // FRONT
+  function handleFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    } else {
+      setFileName('Import your ID');
+    }
+  };
 
-	async function handleRegister() {
-		sign().then(() => {
-			window.location.href = "https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/"
-		})
-	}
+  function handleCreateAccount() {
+    setPage("create-account");
+  }
 
-	return (
-		<main className="flex min-h-screen w-full items-center justify-center">
-			<Button color="primary" className="flex justify-center bg-gradient-to-r from-blue-900 to-blue-700 px-2 py-10 rounded-2xl" onPress={onOpen}>
-				<div className="w-1/3 p-2 my-2">
-					<Image src={klickyc_white} alt="Klickyc logo" />
-				</div>
-				<div className="w-2/3 flex flex-col justify-start items-start">
-					<p className="text-md">Register with</p>
-					<h3 className="text-2xl">KlickYC</h3>
-				</div>
-			</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-				<ModalContent>
-					{(onClose) => (
-						<>
-							<ModalHeader className="flex items-center justify-center">
-								<Image src={klickyc_black} alt="Klickyc logo" className="w-[35px] mx-2" />
-								<h2 className="text-blue-900 mt-[5px]">KLICKYC</h2>
-							</ModalHeader>
-							<ModalBody>
-								{page == "login" ?
-									<div className="mb-4 w-full flex flex-col">
-										<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
-										<Button as={Link} href="https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/" className="mt-6 bg-blue-900 text-white">Connect</Button>
-										<Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleCreateAccount}>Create an account</Link>
-									</div>
-									:
-									page == "create-account" ?
-										<div className="mb-2 w-full flex flex-col">
-											<div className="mt-4">
-												<p className="text-sm mb-2">ID <span className="text-red-500">*</span></p>
-												<label htmlFor="file-upload" className="text-white text-sm block text-white text-sm bg-gradient-to-r from-blue-900 to-blue-700 w-full cursor-pointer py-2 px-4 rounded-lg shadow-md hover:opacity-80 focus:outline-none">
-													{fileName}
-												</label>
-												<input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
-											</div>
-											<div className="mt-4">
-												<Input isRequired type="text" label="Name" placeholder="Write your full name here" labelPlacement="outside" />
-											</div>
-											<div className="mt-4">
-												<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
-											</div>
-											<Button className="mt-6 bg-blue-900 text-white" onClick={handleRegister}>Connect</Button>
-											<Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleLogin}>I have an account</Link>
-										</div>
-										:
-										<div className="h-[200px] flex items-center justify-center">
-											<CircularProgress color="default" label="Loading..." />
-										</div>
-								}
-							</ModalBody>
-						</>
-					)}
-				</ModalContent>
-			</Modal>
-		</main >
-	);
+  function handleLogin() {
+    setPage("login");
+  }
+
+  async function handleRegister() {
+    localStorage.setItem('register', 'true');
+    sign().then(() => {
+      window.location.href = "https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/"
+    })
+  }
+
+  async function handleVerify() {
+    console.log(localStorage.getItem('register'))
+    localStorage.setItem('register', 'false');
+    console.log(localStorage.getItem('register'))
+    sign().then(() => {
+      window.location.href = "https://provehances-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=64751109&redirect_uri=http://localhost:3000/"
+    })
+  }
+
+  return (
+    <main className="flex min-h-screen w-full items-center justify-center">
+      <Button color="primary" className="flex justify-center bg-gradient-to-r from-blue-900 to-blue-700 px-2 py-10 rounded-2xl" onPress={onOpen}>
+        <div className="w-1/3 p-2 my-2">
+          <Image src={klickyc_white} alt="Klickyc logo" />
+        </div>
+        <div className="w-2/3 flex flex-col justify-start items-start">
+          <p className="text-md">Register with</p>
+          <h3 className="text-2xl">KlickYC</h3>
+        </div>
+      </Button>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex items-center justify-center">
+                <Image src={klickyc_black} alt="Klickyc logo" className="w-[35px] mx-2" />
+                <h2 className="text-blue-900 mt-[5px]">KLICKYC</h2>
+              </ModalHeader>
+              <ModalBody>
+                {page == "login" ?
+                  <div className="mb-4 w-full flex flex-col">
+                    <Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
+                    <Button className="mt-6 bg-blue-900 text-white" onClick={handleVerify}>Connect</Button>
+                    <Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleCreateAccount}>Create an account</Link>
+                  </div>
+                  :
+                  page == "create-account" ?
+                    <div className="mb-2 w-full flex flex-col">
+                      <div className="mt-4">
+                        <p className="text-sm mb-2">ID <span className="text-red-500">*</span></p>
+                        <label htmlFor="file-upload" className="text-white text-sm block text-white text-sm bg-gradient-to-r from-blue-900 to-blue-700 w-full cursor-pointer py-2 px-4 rounded-lg shadow-md hover:opacity-80 focus:outline-none">
+                          {fileName}
+                        </label>
+                        <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+                      </div>
+                      <div className="mt-4">
+                        <Input isRequired type="text" label="Name" placeholder="Write your full name here" labelPlacement="outside" />
+                      </div>
+                      <div className="mt-4">
+                        <Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
+                      </div>
+                      <Button className="mt-6 bg-blue-900 text-white" onClick={handleRegister}>Connect</Button>
+                      <Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleLogin}>I have an account</Link>
+                    </div>
+                    :
+                    <div className="h-[200px] flex items-center justify-center">
+                      <CircularProgress color="default" label="Loading..." />
+                    </div>
+                }
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </main >
+  );
 }
