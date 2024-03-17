@@ -13,6 +13,7 @@ import { signMessage } from '@wagmi/core';
 import { config } from './config'
 import axios from "axios";
 
+
 // IMAGES
 import klickyc_white from "@/public/klickyc_white.svg"
 import klickyc_black from "@/public/klickyc_black.svg"
@@ -31,11 +32,13 @@ export default function KlickYC() {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [page, setPage] = useState("login");
 	const [fileName, setFileName] = useState("Import your ID");
+  const [ENS, setENS] = useState("");
 
-	const url = 'https://gateway.lighthouse.storage/ipfs/QmR6MqrcrwtKVVxsdcDHX6LNUmCzhNcbiBJEdHBQHmXfUV';
+	const url = 'https://gateway.lighthouse.storage/ipfs/QmZG9DqYLsWh38jTaHyecD2Y38237XSyNfHy2TqYd3n2iT';
 
 	// CODE TO ACCESS_TOKEN REQUEST
 	useEffect(() => {
+    setENS(""+localStorage.getItem('ENS'));
 		const code = searchParams.get('code');
 
 		if (code != undefined) {
@@ -101,8 +104,10 @@ export default function KlickYC() {
 			value: Math.abs(transactionData.value).toString()
 		}
 
-		const name = 'KlickYC';
-		const hash = generateHash(name, transactionDataForHash);
+		// const name = 'KlickYC';
+    const ENS = ""+ localStorage.getItem('ENS');
+    console.log('ENS:', ENS)
+		const hash = generateHash(ENS, transactionDataForHash);
 		console.log(hash)
 
 		const apiKey = "" + process.env.NEXT_PUBLIC_LIGHTHOUSE;
@@ -110,14 +115,14 @@ export default function KlickYC() {
 		console.log('Register:', localStorage.getItem('register'))
 
 		if (localStorage.getItem('register') == 'true') { // PUSH NEW INSTANCE WHEN REGISTER
-			const uploadResponse = await lighthouse.uploadText(hash, apiKey, name)
+			const uploadResponse = await lighthouse.uploadText(hash, apiKey, ENS)
 			let urlEndpoint = uploadResponse.data.Hash
 			console.log('Uploaded to IPFS:', urlEndpoint)
 			console.log('URL:', url)
 			setPage("verified")
 		}
 		else { // COMPARE THE HASH IF LOGIN
-			const hashTest = generateHash(name, transactionDataForHash);
+			const hashTest = generateHash(ENS, transactionDataForHash);
 			console.log('Hash Test:', hashTest)
 			const hashData = fetchData();
 			console.log('Hash Data:', hashData)
@@ -171,6 +176,7 @@ export default function KlickYC() {
 	}
 
 	async function handleRegister() {
+    localStorage.setItem('ENS', ENS);
 		localStorage.setItem('register', 'true');
 		handleSign().then(() => {
 			window.location.href = "https://london-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=837089&redirect_uri=http://localhost:3000/"
@@ -178,9 +184,8 @@ export default function KlickYC() {
 	}
 
 	async function handleVerify() {
-		console.log(localStorage.getItem('register'))
-		localStorage.setItem('register', 'false');
-		console.log(localStorage.getItem('register'))
+    localStorage.setItem('ENS', ENS);
+    localStorage.setItem('register', 'false');
 		window.location.href = "https://london-sandbox.biapi.pro/2.0/auth/webview/connect?client_id=837089&redirect_uri=http://localhost:3000/"
 	}
 
@@ -224,7 +229,7 @@ export default function KlickYC() {
 											<ModalBody>
 												{page == "login" ?
 													<div className="mb-4 w-full flex flex-col">
-														<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
+														<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" value={ENS} onChange={(e:any) => setENS(e.target.value)} />
 														<Button className="mt-6 bg-blue-900 text-white" onClick={handleVerify}>Connect</Button>
 														<Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleCreateAccount}>Create an account</Link>
 													</div>
@@ -241,7 +246,7 @@ export default function KlickYC() {
 															<Input isRequired type="text" label="Name" placeholder="Write your full name here" labelPlacement="outside" />
 														</div>
 														<div className="mt-4">
-															<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" />
+															<Input isRequired type="text" label="ENS" placeholder="Write your ENS here" labelPlacement="outside" value={ENS} onChange={(e:any) => setENS(e.target.value)}/>
 														</div>
 														<Button className="mt-6 bg-blue-900 text-white" onClick={handleRegister}>Connect</Button>
 														<Link href="" className="text-gray-500 text-xs text-center mt-3" onClick={handleLogin}>I have an account</Link>
