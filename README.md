@@ -1,21 +1,13 @@
-# Open Banking Overview
-
-## What is Open Banking?
-
-Open Banking is a transformative approach in the financial sector that allows third-party developers to access financial data through bank APIs. This innovation fosters a more competitive and inclusive financial ecosystem, enabling personalized banking services and enhanced customer experiences.
-
-## Global Adoption
-
-- **Europe & UK**: Leaders in Open Banking, driven by regulatory frameworks like PSD2.
-- **Australia**: Supported by the Consumer Data Right, promoting data sharing and competition.
-- **Brazil**: Advancing in financial innovation and transparency through Open Banking regulations.
-
-
 # KlickYC
 
 ## Overview 🌟
 
 KlickYC is a KYC SDK that allows you to identify a user in just a few clicks using open-banking.
+
+## Vercel deployment 🌐
+
+https://klickyc.vercel.app/
+Account already registred: ewan.eth
 
 ## Table of Contents 📑
 - [Problem Statement](#problem-statement-%EF%B8%8F)
@@ -36,6 +28,18 @@ We created KlickYC, which allows you to linked your ENS and your bank account to
 
 We use ENS as an on-chain identity to allows us to do the link with a bank account. Once the user have done the KYC, the ENS will be linked forever to the bank account. This way, everytime the user will have to do a KYC, he will just need to select his ENS and to connect his bank account to do his  KYC.  
 We used LightHouse to store our data on IPFS very easily. Using the sdk of LightHouse, we are able to store a file in an IPFS url and then to get the data from it.  
+
+# Open Banking Overview
+
+## What is Open Banking?
+
+Open Banking is a transformative approach in the financial sector that allows third-party developers to access financial data through bank APIs. This innovation fosters a more competitive and inclusive financial ecosystem, enabling personalized banking services and enhanced customer experiences.
+
+## Global Adoption
+
+- **Europe & UK**: Leaders in Open Banking, driven by regulatory frameworks like PSD2.
+- **Australia**: Supported by the Consumer Data Right, promoting data sharing and competition.
+- **Brazil**: Advancing in financial innovation and transparency through Open Banking regulations.
 
 ## Product 🛠️
 
