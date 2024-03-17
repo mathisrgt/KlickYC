@@ -30,7 +30,7 @@ KYC are really long and boring to do, and you have to do it everytime you regist
 
 ## Solution 📜
 
-We created KlickYC, which allows you to linked your ENS and your bank acconut to your KYC. So you just have to do the KYC the 1st time, and everytime you would like to do another KYC, you enter your ENS and connect your bank account to proof you already did the KYC.
+We created KlickYC, which allows you to linked your ENS and your bank account to your KYC. So you just have to do the KYC the 1st time, and everytime you would like to do another KYC, you enter your ENS and connect your bank account to proof you already did the KYC.
 
 ## Features ✨
 
