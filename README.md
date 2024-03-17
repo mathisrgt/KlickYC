@@ -1,4 +1,4 @@
-# KlickYC
+# KlickYC 🪪
 
 ## Overview 🌟
 
