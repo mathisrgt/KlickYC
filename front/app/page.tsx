@@ -32,7 +32,7 @@ export default function KlickYC() {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [page, setPage] = useState("login");
 	const [fileName, setFileName] = useState("Import your ID");
-  const [ENS, setENS] = useState("");
+  	const [ENS, setENS] = useState("");
 
 	const url = 'https://gateway.lighthouse.storage/ipfs/QmZG9DqYLsWh38jTaHyecD2Y38237XSyNfHy2TqYd3n2iT';
 
